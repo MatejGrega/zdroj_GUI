@@ -3,6 +3,7 @@ public class Program
 {
 	static void Main(string[] args)
 	{
-		Console.WriteLine("Hello, World!");
+		Zdroj zdroj = new Zdroj();
+		zdroj.test();
 	}
 }
