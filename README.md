@@ -1,5 +1,8 @@
 # zdroj_GUI
 
+Súbor Zdroj.cs obsahujúci triedu pre ovládanie zdroja sa nachádza v hlavnom priečinku v repozitári.
+Repozitár obsahuje tento súbor a konzolovú aplikáciu pre jeho testovanie. 
+
 Požiadavky na ovládací program pre laboratórny zdroj:
 
 Grafické rozhranie, ktoré v hlavnom okne stále ukazuje aktuálne nastavené a merané hodnoty napätia a prúdu.
