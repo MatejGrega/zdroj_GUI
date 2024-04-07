@@ -1,3 +1,35 @@
+/*
+ * This class realizes communication interface with power supply.
+ * Power supply is found on an available serial ports of computer automatically
+ * after calling method Connect(). Method Disconnect() should be called before
+ * exiting the program. All parameters of power supply like current and
+ * voltage limit, measured voltage and current, enabled output etc. are implemented
+ * as properties. Actual value of parameter is checked each time a property is
+ * accessed. An exception is thrown if getting value of property from power supply
+ * fail or setting property value to power supply violates rules of safe operation.
+ * Log file with all communication over serial port is created each time the
+ * constructior is called and successfully finds power supply. Log file path is
+ * AppData/Roaming/PowerSupplyLog/YYYY-MM-DD_HH-MM-SS.log, where YYYY-MM-DD is actual date
+ * and HH-MM-SS is actual time.
+ * 
+ * List of properties:
+ *		double						MeasCurrent		read only
+ *		double						MeasPower		read only
+ *		double						MeasVoltage		read only
+ *		double						CurrentLimit
+ *		double						VoltageLimit
+ *		bool						DigMode			read only
+ *		int							VoltSlew
+ *		Zdroj.OverLimitProtection	OverLimProt
+ *		bool						CalState		read only
+ * List of public methods:
+ *		bool	Connect()
+ *		void	Disconnect()
+ *		void	Reset()
+ *		void	CalCurrent(double StartCurrent, double StopCurrent)
+ *		void	CalVoltage(double StartVoltage, double StopVoltage)
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,13 +56,23 @@ public class Zdroj
 	const int _maxVoltSlew = 30000;
 
 	private SerialPort _serPort = new SerialPort(); //serial port used for communication with power supply
+	private string _logFilePath;					//file path to log
+	private StreamWriter _strWr;					//stream writer for writing to log file
 
 	public Zdroj()
 	{
 		//power supply is communicating via virtual serial port over USB physical layer
 		//so serial port setting like baud rate, stop bits, etc. does not matter
-		_serPort.ReadTimeout = 5000;    //timeout for reading from serial port - used after sending a command and reading answer
-										//Connect();
+		_serPort.ReadTimeout = 1500;    //timeout for reading from serial port - used after sending a command and reading answer
+		_serPort.WriteTimeout = 1000;
+
+		string filePath = Path.Combine(Environment.GetFolderPath(
+			Environment.SpecialFolder.ApplicationData), "PowerSupplyLog");
+		string fileName = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".log";
+		_logFilePath = Path.Combine(filePath, fileName);
+		Directory.CreateDirectory(filePath);
+		_strWr = File.CreateText(_logFilePath);
+		_strWr.AutoFlush = true;
 	}
 
 	//returns actual measured output current
@@ -70,6 +112,7 @@ public class Zdroj
 		set
 		{
 			checkDigitalControl();
+			checkCal();
 			if (value > _maxCurrLimit)
 			{
 				throw new Exception("New value of current exceeds maximum. New value was not set.");
@@ -93,6 +136,7 @@ public class Zdroj
 		set
 		{
 			checkDigitalControl();
+			checkCal();
 			if (value > _maxVoltLimit)
 			{
 				throw new Exception("New value of current exceeds maximum. New value was not set.");
@@ -125,6 +169,7 @@ public class Zdroj
 		}
 		set
 		{
+			checkCal();
 			sendCommand(value ? "OUTP 1" : "OUTP 0");
 		}
 	}
@@ -187,6 +232,15 @@ public class Zdroj
 		}
 	}
 
+	//calibration is in progress
+	public bool CalState
+	{
+		get
+		{
+			return getBoolAnswerCommand("SYST:CAL?");
+		}
+	}
+
 	//return true if power supply was found on serial port and is successfully connected else return false
 	//serial port with power supply remains opened
 	public bool Connect()
@@ -197,27 +251,39 @@ public class Zdroj
 		{
 			try
 			{
+				_strWr.WriteLine("Opening serial port:" + tmpPort);
 				_serPort.PortName = tmpPort;
 				_serPort.Open();
-				_serPort.Write("*IDN?\n");				//send identification SCPI command
-				if(_serPort.ReadLine() == "MATEJ GREGA,Power supply 0-30V 1A,1,1.0")	//compare with supposed answer
+				_serPort.Write("*IDN?\n");              //send identification SCPI command
+				_strWr.WriteLine(DateTime.Now.ToString("HH:mm:ss.ff") + " -> *IDN?");
+				string tmpStr = _serPort.ReadLine();
+				_strWr.WriteLine(DateTime.Now.ToString("HH:mm:ss.ff") + " <- " + tmpStr);
+				if(tmpStr == "MATEJ GREGA,Power supply 0-30V 1A,1,1.0")	//compare with supposed answer
 				{
 					found = true;						//power supply was found
 				}
 			}
-			catch{}		//catch exceptions so they do not propagate upwards, but they are not used (empty catch{})
+			catch(Exception ex)
+			{
+				_strWr.WriteLine("EXCEPTION THROWN: " + ex.Message);
+			}
 			finally
 			{
 				if (_serPort.IsOpen && found == false)
 				{
+					_strWr.WriteLine("Closing serial port: " + tmpPort);
 					_serPort.Close();
 				}
 			}
 			if (found)
 			{
+				_strWr.WriteLine("Serial port with power supply found: " + _serPort.PortName);
+				_strWr.WriteLine();
 				return true;
 			}
 		}
+		_strWr.WriteLine("Serial port with power supply not found.");
+		_strWr.WriteLine();
 		return false;	//power supply was not found
 	}
 
@@ -235,10 +301,77 @@ public class Zdroj
 		}
 	}
 
+	//set power supply to defined state
 	public void Reset()
 	{
-		sendCommand("*RST");
-		_serPort.ReadExisting();
+		sendCommand("*RST");		//reset power supply
+		_serPort.ReadExisting();	//clear input buffer and serial stream
+	}
+
+	//initiate calibration of current in specified range
+	public void CalCurrent(double StartCurrent, double StopCurrent)
+	{
+		if (getBoolAnswerCommand("SYST:CAL?"))
+		{
+			throw new Exception("Cannot initiate new calibration, because calibration is already in progress!");
+		}
+		if(StartCurrent < _minCurrLimit)
+		{
+			StartCurrent = _minCurrLimit;
+		}
+		if(StartCurrent > _maxCurrLimit)
+		{
+			StartCurrent = _maxCurrLimit;
+		}
+		if (StopCurrent < _minCurrLimit)
+		{
+			StopCurrent = _minCurrLimit;
+		}
+		if (StopCurrent > _maxCurrLimit)
+		{
+			StopCurrent = _maxCurrLimit;
+		}
+		if(StartCurrent > StopCurrent)
+		{
+			double tmpDouble = StartCurrent;
+			StartCurrent = StopCurrent;
+			StopCurrent = tmpDouble;
+		}
+		sendCommand(string.Format(CultureInfo.GetCultureInfo("en-US"),
+			"SYST:CAL:CURR {0:0.000},{1:0.000}", StartCurrent, StopCurrent));
+	}
+
+	//initiate calibration of voltage in specified range
+	public void CalVoltage(double StartVoltage, double StopVoltage)
+	{
+		if (getBoolAnswerCommand("SYST:CAL?"))
+		{
+			throw new Exception("Cannot initiate new calibration, because calibration is already in progress!");
+		}
+		if (StartVoltage < _minCurrLimit)
+		{
+			StartVoltage = _minCurrLimit;
+		}
+		if (StartVoltage > _maxCurrLimit)
+		{
+			StartVoltage = _maxCurrLimit;
+		}
+		if (StopVoltage < _minCurrLimit)
+		{
+			StopVoltage = _minCurrLimit;
+		}
+		if (StopVoltage > _maxCurrLimit)
+		{
+			StopVoltage = _maxCurrLimit;
+		}
+		if (StartVoltage > StopVoltage)
+		{
+			double tmpDouble = StartVoltage;
+			StartVoltage = StopVoltage;
+			StopVoltage = tmpDouble;
+		}
+		sendCommand(string.Format(CultureInfo.GetCultureInfo("en-US"),
+			"SYST:CAL:VOLT {0:0.000}, {1:0.000}", StartVoltage, StopVoltage));
 	}
 
 	//send SCPI command to power supply
@@ -248,10 +381,12 @@ public class Zdroj
 		{
 			_serPort.ReadExisting();            //clear input buffer - read all available data from input buffer and stream
 			_serPort.Write(command + "\n");
+			_strWr.WriteLine(DateTime.Now.ToString("HH:mm:ss.ff") + " -> " + command);
 		}
 		catch
 		{
-			throw new Exception("Power supply is not connected or does not answer correctly to the command \"" + command + "\"");
+			throw new Exception("Power supply is not connected or does not answer correctly to the command \"" +
+				command + "\"");
 		}
 	}
 
@@ -262,11 +397,14 @@ public class Zdroj
 		{
 			_serPort.ReadExisting();            //clear input buffer - read all available data from input buffer and stream
 			sendCommand(command);
-			return double.Parse(_serPort.ReadLine(), NumberStyles.Any, CultureInfo.InvariantCulture);
+			string tmpStr = _serPort.ReadLine();
+			_strWr.WriteLine(DateTime.Now.ToString("HH:mm:ss.ff") + " <- " + tmpStr);
+			return double.Parse(tmpStr, NumberStyles.Any, CultureInfo.InvariantCulture);
 		}
 		catch
 		{
-			throw new Exception("Power supply is not connected or does not answer correctly to the command \"" + command + "\"");
+			throw new Exception("Power supply is not connected or does not answer correctly to the command \"" +
+				command + "\"");
 		}
 	}
 
@@ -277,11 +415,14 @@ public class Zdroj
 		{
 			_serPort.ReadExisting();            //clear input buffer - read all available data from input buffer and stream
 			sendCommand(command);
-			return int.Parse(_serPort.ReadLine(), NumberStyles.Any, CultureInfo.InvariantCulture);
+			string tmpStr = _serPort.ReadLine();
+			_strWr.WriteLine(DateTime.Now.ToString("HH:mm:ss.ff") + " <- " + tmpStr);
+			return int.Parse(tmpStr, NumberStyles.Any, CultureInfo.InvariantCulture);
 		}
 		catch
 		{
-			throw new Exception("Power supply is not connected or does not answer correctly to the command \"" + command + "\"");
+			throw new Exception("Power supply is not connected or does not answer correctly to the command \"" +
+				command + "\"");
 		}
 	}
 
@@ -292,12 +433,13 @@ public class Zdroj
 		{
 			_serPort.ReadExisting();            //clear input buffer - read all available data from input buffer and stream
 			sendCommand(command);
-			string answr = _serPort.ReadLine();
-			if(answr == "0")
+			string tmpStr = _serPort.ReadLine();
+			_strWr.WriteLine(DateTime.Now.ToString("HH:mm:ss.ff") + " <- " + tmpStr);
+			if (tmpStr == "0")
 			{
 				return false;
 			}
-			if(answr == "1")
+			if(tmpStr == "1")
 			{
 				return true;
 			}
@@ -305,7 +447,8 @@ public class Zdroj
 		}
 		catch
 		{
-			throw new Exception("Power supply is not connected or does not answer correctly to the command \"" + command + "\"");
+			throw new Exception("Power supply is not connected or does not answer correctly to the command \"" +
+				command + "\"");
 		}
 	}
 
@@ -314,8 +457,17 @@ public class Zdroj
 	{
 		if (!getBoolAnswerCommand("SYST:MODE:DIG?"))
 		{
-			throw new Exception("Cannot set the value, because power supply is analog controlled. Change to digital control manually.");
+			throw new Exception("Cannot set the value, because power supply is analog controlled." +
+				"Change to digital control manually.");
 		}
 	}
 
+	//throw exception if power supply calibration is in progress
+	private void checkCal()
+	{
+		if (getBoolAnswerCommand("SYST:CAL?"))
+		{
+			throw new Exception("Cannot set the value, because power supply calibration is in progress!");
+		}
+	}
 }
