@@ -48,12 +48,12 @@ public class Zdroj
 		OVP								//overvoltage protection
 	};
 
-	const double _minCurrLimit = 0.001;
-	const double _maxCurrLimit = 1.000;
-	const double _minVoltLimit = 0.01;
-	const double _maxVoltLimit = 30.00;
-	const int _minVoltSlew = 1;
-	const int _maxVoltSlew = 30000;
+	private const double _minCurrLimit = 0.001;
+	private const double _maxCurrLimit = 1.000;
+	private const double _minVoltLimit = 0.01;
+	private const double _maxVoltLimit = 30.00;
+	private const int _minVoltSlew = 1;
+	private const int _maxVoltSlew = 30000;
 
 	private SerialPort _serPort = new SerialPort(); //serial port used for communication with power supply
 	private string _logFilePath;					//file path to log
@@ -73,6 +73,15 @@ public class Zdroj
 		Directory.CreateDirectory(filePath);
 		_strWr = File.CreateText(_logFilePath);
 		_strWr.AutoFlush = true;
+	}
+
+	//Path to log file
+	public string LogFilePath
+	{
+		get
+		{
+			return _logFilePath;
+		}
 	}
 
 	//returns actual measured output current
