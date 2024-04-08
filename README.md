@@ -1,7 +1,11 @@
 # zdroj_GUI
 
-Súbor Zdroj.cs obsahujúci triedu pre ovládanie zdroja sa nachádza v hlavnom priečinku v repozitári.
-Repozitár obsahuje tento súbor a konzolovú aplikáciu pre jeho testovanie. 
+Súbory Zdroj.cs a ZdrojSkript.cs s triedami pre riadenie zdroja sú v hlavnom priečinku koncolovej aplikácie zdroj_console,
+kde boli vyvíjané a testované. Implementované je riadenie zdroja cez vlastnosti triedy Zdroj a zároveň riadenie
+zdroja zo "skriptovacieho" súboru .csv. Kompletná komunikácia so zdrojom cez sériový port je ukladaná do logovacieho
+súboru. Viac informácií je v komentároch daných súborov. Obidve triedy vyvolajú výnimku, ak nastane akákoľvek chyba,
+preto by mali byť tieto triedy v hlavnom programe volané pomocou try{} a catch{}. Výnimka už má naformátovaný text,
+takže bude stačiť zobraziť tento text vo vyskakovacom okne (MessageBox).
 
 Požiadavky na ovládací program pre laboratórny zdroj:
 
@@ -21,14 +25,14 @@ V hlavnom okne nastavovanie strmosti nábehu.
 
 Grafické zobrazenie priebehu napätia a prúdu v hlavnom okne. (Ako osciloskop v režime roll)
 
-Ukladanie komunikácie s laboratórnym zdrojom do logovacieho súboru, ktorý môže byť zobrazený v spodnej časti hlavného okna.
+HOTOVO - Ukladanie komunikácie s laboratórnym zdrojom do logovacieho súboru, ktorý môže byť zobrazený v spodnej časti hlavného okna.
 
 Uloženie nastavenia zdroja do súboru (nastavenie ochrán, napätie, prúd, strmosť nábehu).
 
 Načítanie nastavenia zdroja zo súboru (nastavenie ochrán, napätie, prúd, strmosť nábehu).
 
-Nastavovanie napätia a prúdu podľa "programu" v súbore. Súbor bude obsahovať čas od spustenia a hodnutu napätia a prúdu,
-ktorá má byť vtedy nastavená. Formát súboru nie je kritický, mne sa napr. páči csv.
+HOTOVO - Nastavovanie napätia a prúdu podľa "programu" v súbore. Súbor bude obsahovať čas od spustenia a hodnutu napätia a prúdu,
+         ktorá má byť vtedy nastavená. Formát súboru nie je kritický, mne sa napr. páči csv.
 
 Cez hornú lištu menu, možnosť otvoriť nové okno s kalibráciou zdroja. Okno bude obsahovať dva samostatné typy kalibrácie.
 Prvý typ je kalibrácia napätia, druhý kalibrácia prúdu. Užívateľ zadá začiatočnú a konečnú hodnotu napätia resp. prúdu,
