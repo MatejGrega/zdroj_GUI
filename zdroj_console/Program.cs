@@ -8,6 +8,7 @@ public class Program
         Console.WriteLine("Zaciatok");
 
         Zdroj zdroj = new Zdroj();
+		ZdrojSkript.Init(@"C:\Users\matej\Desktop\aa.txt");
 		if (zdroj.Connect())
 		{
             Console.WriteLine("Uspesne pripojene");
@@ -22,7 +23,7 @@ public class Program
 			Console.WriteLine("Prud = " + zdroj.MeasCurrent);
 			Console.WriteLine("Vykon = " + zdroj.MeasPower);
 			zdroj.Output = true;
-			Console.WriteLine(zdroj.OverLimProt);
+			/*Console.WriteLine(zdroj.OverLimProt);
 			Thread.Sleep(5000);
 			zdroj.VoltSlew = 1;
 			zdroj.VoltageLimit = 2.75;
@@ -36,14 +37,17 @@ public class Program
 			Thread.Sleep(5000);
 			Console.WriteLine("Nast napatie = " + zdroj.VoltageLimit);
 			Console.WriteLine("Nast prud = " + zdroj.CurrentLimit);
+			Thread.Sleep(2000);*/
+			ZdrojSkript.Start(zdroj);
+			Console.ReadKey();
+			ZdrojSkript.Abort();
 			zdroj.Reset();
-			Thread.Sleep(2000);
 		}
 		catch { }
 		finally
 		{
 			zdroj.Disconnect();
-		}
+		}/**/
 		
 	}
 }

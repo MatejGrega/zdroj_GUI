@@ -128,10 +128,10 @@ public class Zdroj
 			}
 			if(value < _minCurrLimit)
 			{
-				sendCommand("CURR MIN");
+				SendCommand("CURR MIN");
 				return;
 			}
-			sendCommand(string.Format("CURR " + value.ToString("0.000", CultureInfo.GetCultureInfo("en-US"))));
+			SendCommand(string.Format("CURR " + value.ToString("0.000", CultureInfo.GetCultureInfo("en-US"))));
 		}
 	}
 
@@ -152,10 +152,10 @@ public class Zdroj
 			}
 			if (value < _minVoltLimit)
 			{
-				sendCommand("VOLT MIN");
+				SendCommand("VOLT MIN");
 				return;
 			}
-			sendCommand(string.Format("VOLT " + value.ToString("0.00", CultureInfo.GetCultureInfo("en-US"))));
+			SendCommand(string.Format("VOLT " + value.ToString("0.00", CultureInfo.GetCultureInfo("en-US"))));
 		}
 	}
 
@@ -179,7 +179,7 @@ public class Zdroj
 		set
 		{
 			checkCal();
-			sendCommand(value ? "OUTP 1" : "OUTP 0");
+			SendCommand(value ? "OUTP 1" : "OUTP 0");
 		}
 	}
 
@@ -201,7 +201,7 @@ public class Zdroj
 			{
 				tmpSlewRate = _maxVoltSlew;
 			}
-			sendCommand("VOLT:SLEW " + tmpSlewRate);
+			SendCommand("VOLT:SLEW " + tmpSlewRate);
 		}
 	}
 
@@ -234,10 +234,10 @@ public class Zdroj
 			{
 				tmpOVP = true;
 			}
-			sendCommand("VOLT:PROT:STAT 0");
-			sendCommand("CURR:PROT:STAT 0");
-			sendCommand(tmpOVP ? "VOLT:PROT:STAT 1" : "VOLT:PROT:STAT 0");
-			sendCommand(tmpOCP ? "CURR:PROT:STAT 1" : "CURR:PROT:STAT 0");
+			SendCommand("VOLT:PROT:STAT 0");
+			SendCommand("CURR:PROT:STAT 0");
+			SendCommand(tmpOVP ? "VOLT:PROT:STAT 1" : "VOLT:PROT:STAT 0");
+			SendCommand(tmpOCP ? "CURR:PROT:STAT 1" : "CURR:PROT:STAT 0");
 		}
 	}
 
@@ -303,7 +303,7 @@ public class Zdroj
 		{
 			try
 			{
-				sendCommand("OUTP 0");		//disable output of power supply if possible
+				SendCommand("OUTP 0");		//disable output of power supply if possible
 			}
 			catch { }						//ignore exceptions
 			_serPort.Close();
@@ -313,7 +313,7 @@ public class Zdroj
 	//set power supply to defined state
 	public void Reset()
 	{
-		sendCommand("*RST");		//reset power supply
+		SendCommand("*RST");		//reset power supply
 		_serPort.ReadExisting();	//clear input buffer and serial stream
 	}
 
@@ -346,7 +346,7 @@ public class Zdroj
 			StartCurrent = StopCurrent;
 			StopCurrent = tmpDouble;
 		}
-		sendCommand(string.Format(CultureInfo.GetCultureInfo("en-US"),
+		SendCommand(string.Format(CultureInfo.GetCultureInfo("en-US"),
 			"SYST:CAL:CURR {0:0.000},{1:0.000}", StartCurrent, StopCurrent));
 	}
 
@@ -379,12 +379,12 @@ public class Zdroj
 			StartVoltage = StopVoltage;
 			StopVoltage = tmpDouble;
 		}
-		sendCommand(string.Format(CultureInfo.GetCultureInfo("en-US"),
+		SendCommand(string.Format(CultureInfo.GetCultureInfo("en-US"),
 			"SYST:CAL:VOLT {0:0.000}, {1:0.000}", StartVoltage, StopVoltage));
 	}
 
 	//send SCPI command to power supply
-	private void sendCommand(string command)
+	public void SendCommand(string command)
 	{
 		try
 		{
@@ -405,7 +405,7 @@ public class Zdroj
 		try
 		{
 			_serPort.ReadExisting();            //clear input buffer - read all available data from input buffer and stream
-			sendCommand(command);
+			SendCommand(command);
 			string tmpStr = _serPort.ReadLine();
 			_strWr.WriteLine(DateTime.Now.ToString("HH:mm:ss.ff") + " <- " + tmpStr);
 			return double.Parse(tmpStr, NumberStyles.Any, CultureInfo.InvariantCulture);
@@ -423,7 +423,7 @@ public class Zdroj
 		try
 		{
 			_serPort.ReadExisting();            //clear input buffer - read all available data from input buffer and stream
-			sendCommand(command);
+			SendCommand(command);
 			string tmpStr = _serPort.ReadLine();
 			_strWr.WriteLine(DateTime.Now.ToString("HH:mm:ss.ff") + " <- " + tmpStr);
 			return int.Parse(tmpStr, NumberStyles.Any, CultureInfo.InvariantCulture);
@@ -441,7 +441,7 @@ public class Zdroj
 		try
 		{
 			_serPort.ReadExisting();            //clear input buffer - read all available data from input buffer and stream
-			sendCommand(command);
+			SendCommand(command);
 			string tmpStr = _serPort.ReadLine();
 			_strWr.WriteLine(DateTime.Now.ToString("HH:mm:ss.ff") + " <- " + tmpStr);
 			if (tmpStr == "0")
