@@ -19,11 +19,11 @@ public class Program
         }
 		try
 		{
-			Console.WriteLine("Napatie = " + zdroj.MeasVoltage);
+			/*Console.WriteLine("Napatie = " + zdroj.MeasVoltage);
 			Console.WriteLine("Prud = " + zdroj.MeasCurrent);
 			Console.WriteLine("Vykon = " + zdroj.MeasPower);
 			zdroj.Output = true;
-			/*Console.WriteLine(zdroj.OverLimProt);
+			Console.WriteLine(zdroj.OverLimProt);
 			Thread.Sleep(5000);
 			zdroj.VoltSlew = 1;
 			zdroj.VoltageLimit = 2.75;
