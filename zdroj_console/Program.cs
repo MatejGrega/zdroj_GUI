@@ -32,6 +32,8 @@ public class Program
 			zdroj.VoltSlew = 70;
 			zdroj.VoltageLimit = 0.001;
 			Console.WriteLine(zdroj.OverLimProt);
+
+
 			Thread.Sleep(2000);
 			zdroj.VoltageLimit = 7.123;
 			Thread.Sleep(5000);

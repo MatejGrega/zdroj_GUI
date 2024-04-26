@@ -64,6 +64,8 @@ Ak nie je zdroj pripojený, mohli by byť ovládacie prvky neaktívne (šedé), 
 
 SCPI communication uses virtual serial port done by USB:
 Definitions:
+
+
 	Angle brackets < >		Items within angle brackets are parameter abbreviations. For example,
 							<NR1> indicates a specific form of numerical data.
 							
