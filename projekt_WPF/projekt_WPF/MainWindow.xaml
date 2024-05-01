@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:projekt_WPF"
         mc:Ignorable="d"
-        Title="Laboratory power supply" Height="500" Width="810">
+        Title="Laboratory power supply" Height="520" Width="810" MinHeight="520" MinWidth="810">
 
     <Grid Margin="5, 20">
         <Grid.RowDefinitions>
@@ -105,7 +105,18 @@
 					<RowDefinition Height="*"></RowDefinition>
 				</Grid.RowDefinitions>
 
-				<TextBox x:Name="script_path" Height="25" Width="Auto" Margin="8 0 12 0" FontSize="18" FontWeight="Medium" TextAlignment="Right"/>
+				<GroupBox Grid.Row="0" Grid.Column="0" BorderBrush="White" BorderThickness="0">
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*"></ColumnDefinition>
+							<ColumnDefinition Width="30"></ColumnDefinition>
+						</Grid.ColumnDefinitions>
+
+						<TextBox x:Name="script_path" Height="25" Width="Auto" Margin="8 0 12 0" FontSize="18" FontWeight="Medium" TextAlignment="Right" Text="Enter script file path"/>
+						<Button x:Name="open_script_btn" Content="..." FontSize="20" FontWeight="Medium" Grid.Column="1" Margin="0 8 0 8" Click="Open_script_btn_Click"/>
+					</Grid>
+				</GroupBox>
+
                 <Button x:Name="start_script_btn" Content="Start script" FontSize="20" FontWeight="Medium" Height="40" Width="152" Grid.Column="1" Click="Start_script_btn_Click"/>
 				<ProgressBar x:Name="script_progress_bar" Grid.Column="0" Grid.Row="1" Margin="8"/>
 				<Label x:Name="script_progress_bar_lbl" Grid.Column="0" Grid.Row="1" Margin="0" Content="Status: script stopped" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20"/>

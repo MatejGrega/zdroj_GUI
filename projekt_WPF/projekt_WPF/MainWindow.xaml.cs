@@ -288,9 +288,27 @@ namespace projekt_WPF
 			}
         }
 
-        
+		private void Open_script_btn_Click(object sender, RoutedEventArgs e)
+        {
+			// Configure open file dialog box
+			var dialog = new Microsoft.Win32.OpenFileDialog();
+			dialog.FileName = "Script"; // Default file name
+			dialog.DefaultExt = ".csv"; // Default file extension
+			dialog.Filter = "power supply scripts (.csv)|*.csv|All files (*.*)|*.*"; // Filter files by extension
 
-        private void Start_script_btn_Click(object sender, RoutedEventArgs e)
+			// Show open file dialog box
+			bool? result = dialog.ShowDialog();
+
+			// Process open file dialog box results
+			if (result == true)
+			{
+				// Open document
+				script_path.Text = dialog.FileName;
+			}
+		}
+
+
+		private void Start_script_btn_Click(object sender, RoutedEventArgs e)
         {
             try
             {
