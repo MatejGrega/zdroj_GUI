@@ -75,6 +75,8 @@ public class Zdroj
 		_strWr.AutoFlush = true;
 	}
 
+	public bool ReadLogEnabled = false;
+
 	//Path to log file
 	public string LogFilePath
 	{
@@ -384,13 +386,16 @@ public class Zdroj
 	}
 
 	//send SCPI command to power supply
-	public void SendCommand(string command)
+	public void SendCommand(string command, bool logEnabled)
 	{
 		try
 		{
 			_serPort.ReadExisting();            //clear input buffer - read all available data from input buffer and stream
 			_serPort.Write(command + "\n");
-			_strWr.WriteLine(DateTime.Now.ToString("HH:mm:ss.ff") + " -> " + command);
+			if (logEnabled)
+			{
+				_strWr.WriteLine(DateTime.Now.ToString("HH:mm:ss.ff") + " -> " + command);
+			}
 		}
 		catch
 		{
@@ -399,15 +404,23 @@ public class Zdroj
 		}
 	}
 
+	public void SendCommand(string command)
+	{
+		SendCommand(command, true);
+	}
+
 	//send command and parse answer as double precision floating point number
 	private double getDoubleAnswerCommand(string command)
 	{
 		try
 		{
 			_serPort.ReadExisting();            //clear input buffer - read all available data from input buffer and stream
-			SendCommand(command);
+			SendCommand(command, ReadLogEnabled);
 			string tmpStr = _serPort.ReadLine();
-			_strWr.WriteLine(DateTime.Now.ToString("HH:mm:ss.ff") + " <- " + tmpStr);
+			if (ReadLogEnabled)
+			{
+				_strWr.WriteLine(DateTime.Now.ToString("HH:mm:ss.ff") + " <- " + tmpStr);
+			}
 			return double.Parse(tmpStr, NumberStyles.Any, CultureInfo.InvariantCulture);
 		}
 		catch
@@ -423,9 +436,12 @@ public class Zdroj
 		try
 		{
 			_serPort.ReadExisting();            //clear input buffer - read all available data from input buffer and stream
-			SendCommand(command);
+			SendCommand(command, ReadLogEnabled);
 			string tmpStr = _serPort.ReadLine();
-			_strWr.WriteLine(DateTime.Now.ToString("HH:mm:ss.ff") + " <- " + tmpStr);
+			if (ReadLogEnabled)
+			{
+				_strWr.WriteLine(DateTime.Now.ToString("HH:mm:ss.ff") + " <- " + tmpStr);
+			}
 			return int.Parse(tmpStr, NumberStyles.Any, CultureInfo.InvariantCulture);
 		}
 		catch
@@ -441,9 +457,12 @@ public class Zdroj
 		try
 		{
 			_serPort.ReadExisting();            //clear input buffer - read all available data from input buffer and stream
-			SendCommand(command);
+			SendCommand(command, ReadLogEnabled);
 			string tmpStr = _serPort.ReadLine();
-			_strWr.WriteLine(DateTime.Now.ToString("HH:mm:ss.ff") + " <- " + tmpStr);
+			if (ReadLogEnabled)
+			{
+				_strWr.WriteLine(DateTime.Now.ToString("HH:mm:ss.ff") + " <- " + tmpStr);
+			}
 			if (tmpStr == "0")
 			{
 				return false;

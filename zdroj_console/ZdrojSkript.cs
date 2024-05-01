@@ -74,7 +74,7 @@ public static class ZdrojSkript
 	}
 
 	//number of SCPI commands from a script already executed
-	public static int ExecuredScriptCommands
+	public static int ExecutedScriptCommands
 	{
 		get
 		{
@@ -94,6 +94,11 @@ public static class ZdrojSkript
 	//Method loads script file
 	public static void Init(string ScriptPath)
 	{
+		if (_scriptRunning)
+		{
+			throw new Exception("Some Script is already running! Abort script before new is loaded.");
+		}
+
 		_scriptCommands.Clear();
 		_initialized = false;
 		_totalTime = 0.0;
@@ -195,6 +200,7 @@ public static class ZdrojSkript
 		{
 			throw new Exception("Script for controlling power supply not initialized!");
 		}
+		_zdroj.ReadLogEnabled = true;
 		_actualCommandIndex = -1;		//initialization value of index is -1
 		commandTimer.Elapsed += OnTimedEvent;
 		commandTimer.AutoReset = false;
@@ -206,6 +212,7 @@ public static class ZdrojSkript
 	{
 		commandTimer.Stop();
 		_scriptRunning = false;
+		_zdroj.ReadLogEnabled = false;
 	}
 
 	//handler of Timer elapsed period
@@ -227,6 +234,7 @@ public static class ZdrojSkript
 		{
 			commandTimer.Stop();
 			_scriptRunning = false;
+			_zdroj.ReadLogEnabled = false;
 			return;
 		}
 		if (_scriptCommands[_actualCommandIndex].TimeOffset > 0.0)	//if there is a time delay to a next SCPI command
