@@ -27,6 +27,7 @@ namespace projekt_WPF
         private Zdroj zdroj = new Zdroj();
 		DispatcherTimer actual_values_timer = new DispatcherTimer();
         private bool zdrojConnected = false;
+        private DateTime scriptStartTime;
 
 		public MainWindow()
         {
@@ -168,25 +169,6 @@ namespace projekt_WPF
 			}  
         }
 
-        /*
-        private void protection_off_check(object sender, RoutedEventArgs e)
-        {
-            zdroj.OverLimProt = Zdroj.OverLimitProtection.Disabled;
-            sys_log.Content = "Protection: Disabled";
-        }
-
-        private void protection_OCP_check(object sender, RoutedEventArgs e)
-        {
-            zdroj.OverLimProt = Zdroj.OverLimitProtection.OCP;
-            sys_log.Content = "Protection: OCP";
-        }
-
-        private void protection_OVP_check(object sender, RoutedEventArgs e)
-        {
-            zdroj.OverLimProt = Zdroj.OverLimitProtection.OVP;
-            sys_log.Content = "Protection: OVP";
-        }
-        */
         private double VoltageLimit = 0.0;
         private double CurrentLimit = 0.0;
         private int VoltSlew = 0;
@@ -236,6 +218,16 @@ namespace projekt_WPF
             {
                 actual_values_timer.Stop();
                 sys_log.Content = ex.Message.ToString();
+			}
+
+            if (ZdrojSkript.ScriptRunning)
+            {
+                script_progress_bar.Value = (DateTime.Now - scriptStartTime).TotalSeconds / ZdrojSkript.TotalTime * 100;
+            }
+            else
+            {
+                script_progress_bar.Value = 0;
+                script_progress_bar_lbl.Content = "Status: script stopped";
 			}
         }
 
@@ -306,7 +298,17 @@ namespace projekt_WPF
                 {
                     ZdrojSkript.Init(script_path.Text);
                     ZdrojSkript.Start(zdroj);
-                    sys_log.Content = "Script is running";
+                    scriptStartTime = DateTime.Now;
+					sys_log.Content = "Script started. Total commands to be executed: " +
+                        ZdrojSkript.TotalScriptCommands + ". Total time: " +
+                        string.Format("{0:f2}", ZdrojSkript.TotalTime/60) +
+                        " minutes.";
+					script_progress_bar.Value = 0;
+                    script_progress_bar_lbl.Content = "Status: script running";
+                }
+                else
+                {
+                    sys_log.Content = "Script file does not exist. Check file path.";
                 }
             }
             catch (Exception ex)
@@ -322,7 +324,9 @@ namespace projekt_WPF
             {
                 ZdrojSkript.Abort();
                 sys_log.Content = "Script is aborted";
-            }
+                script_progress_bar.Value = 0;
+				script_progress_bar_lbl.Content = "Status: script stopped";
+			}
             catch (Exception ex)
             {
                 sys_log.Content = ex.Message.ToString();

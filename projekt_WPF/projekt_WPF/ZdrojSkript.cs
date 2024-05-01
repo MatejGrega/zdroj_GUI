@@ -48,8 +48,8 @@ public static class ZdrojSkript
     private static int _actualCommandIndex = 0;
     private static Zdroj _zdroj;
 
-    //Total time of the script to be executed
-    public static double TotalTime
+	//Total time of the script to be executed (seconds)
+	public static double TotalTime
     {
         get
         {
@@ -213,7 +213,8 @@ public static class ZdrojSkript
     public static void Abort()
     {
         commandTimer.Stop();
-        _scriptRunning = false;
+		commandTimer.Elapsed -= OnTimedEvent;
+		_scriptRunning = false;
         _zdroj.ReadLogEnabled = false;
     }
 
@@ -232,12 +233,13 @@ public static class ZdrojSkript
         }
 
         _actualCommandIndex++;
-        if (_actualCommandIndex > _scriptCommands.Count - 1)    //end of script
+        if (_actualCommandIndex > (_scriptCommands.Count - 1))    //end of script
         {
             commandTimer.Stop();
             _scriptRunning = false;
             _zdroj.ReadLogEnabled = false;
-            return;
+			commandTimer.Elapsed -= OnTimedEvent;
+			return;
         }
         if (_scriptCommands[_actualCommandIndex].TimeOffset > 0.0)  //if there is a time delay to a next SCPI command
         {

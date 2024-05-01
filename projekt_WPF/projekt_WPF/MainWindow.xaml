@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:projekt_WPF"
         mc:Ignorable="d"
-        Title="Laboratory power supply" Height="440" Width="810">
+        Title="Laboratory power supply" Height="500" Width="810">
 
     <Grid Margin="5, 20">
         <Grid.RowDefinitions>
             <RowDefinition Height="60"></RowDefinition>
             <RowDefinition Height="120"></RowDefinition>
             <RowDefinition Height="30"></RowDefinition>
-            <RowDefinition Height="60 "></RowDefinition>
+            <RowDefinition Height="120 "></RowDefinition>
             <RowDefinition Height="120"></RowDefinition>
         </Grid.RowDefinitions>
 
@@ -28,7 +28,7 @@
             <TextBlock  TextAlignment="Center" FontSize="18" FontWeight="Bold" Width="10" TextWrapping="Wrap">Connect</TextBlock>
         </Button>
 
-        <RadioButton x:Name="user_input_radiobtn" Content="User input" Grid.Column="1" Margin="10,10,10,10" FontSize="20" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" IsEnabled="True" Checked="User_input_radiobtn_checked"/>
+        <RadioButton x:Name="user_input_radiobtn" Content="User input" Grid.Column="1" Margin="10,10,10,10" FontSize="20" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" IsEnabled="False" Checked="User_input_radiobtn_checked"/>
         <Button x:Name="output_btn" IsEnabled="False" Content="Output" FontSize="20" FontWeight="Medium" Margin="24,10,24,10" Height="40" Width="152" Grid.Column="3" Click="Output_btn_Click"/>
 
         <GroupBox x:Name="actual_values" IsEnabled="False" Grid.Column="1" Grid.RowSpan="2" Header="Actual values" Grid.Row="1" Margin="1, 0" Padding="10, 0" FontSize="16" FontWeight="Medium" HorizontalAlignment="Center" BorderBrush="Black">
@@ -85,7 +85,7 @@
         </GroupBox>
 
         <Button x:Name="set_values_btn" IsEnabled="False" Content="Set values" FontSize="13" FontWeight="Medium" Height="20" Width="152" Grid.Row="2" Grid.Column="2" Click="Set_values_btn_Click"/>
-        <Button x:Name="abort_script_btn" IsEnabled="False" Content="Abort script" FontSize="13" FontWeight="Medium" Height="20" Width="152" Grid.Row="2" Grid.Column="3" Click="Abort_script_btn_Click"/>
+        
 
         <RadioButton x:Name="script_input_radiobtn" Content="Script input" Grid.Row="3" Grid.Column="1" Margin="10,10,10,10" FontSize="20" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" Checked="Script_input_radiobtn_checked" IsEnabled="False"/>
         <!--
@@ -100,9 +100,17 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <TextBox x:Name="script_path" Height="25" Width="Auto" Margin="8 0 12 0" FontSize="18" FontWeight="Medium" TextAlignment="Right"/>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*"></RowDefinition>
+					<RowDefinition Height="*"></RowDefinition>
+				</Grid.RowDefinitions>
+
+				<TextBox x:Name="script_path" Height="25" Width="Auto" Margin="8 0 12 0" FontSize="18" FontWeight="Medium" TextAlignment="Right"/>
                 <Button x:Name="start_script_btn" Content="Start script" FontSize="20" FontWeight="Medium" Height="40" Width="152" Grid.Column="1" Click="Start_script_btn_Click"/>
-            </Grid>
+				<ProgressBar x:Name="script_progress_bar" Grid.Column="0" Grid.Row="1" Margin="8"/>
+				<Label x:Name="script_progress_bar_lbl" Grid.Column="0" Grid.Row="1" Margin="0" Content="Status: script stopped" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20"/>
+				<Button x:Name="abort_script_btn" Grid.Column="1" Grid.Row="1" IsEnabled="False" Content="Abort script" FontSize="20" FontWeight="Medium" Height="40" Width="152" Click="Abort_script_btn_Click"/>
+			</Grid>
         </GroupBox>
 
         <!--
@@ -113,8 +121,8 @@
         -->
 
         <GroupBox Grid.Row="4" Grid.ColumnSpan="4" Margin="0, 10" Header="System logging" FontSize="16" FontWeight="Medium" BorderBrush="Black">
-            <Label x:Name="sys_log" Content="" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center" Height="50" Width="700" HorizontalContentAlignment="Center"/>
-        </GroupBox>
+			<Label x:Name="sys_log" Content="" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" Height="50" Margin="5" HorizontalContentAlignment="Center"/> <!-->Width="700"<-->
+		</GroupBox>
 
     </Grid>
 </Window>
