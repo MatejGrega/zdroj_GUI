@@ -1,0 +1,120 @@
+﻿<Window x:Class="projekt_WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:projekt_WPF"
+        mc:Ignorable="d"
+        Title="Laboratory power supply" Height="440" Width="810">
+
+    <Grid Margin="5, 20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"></RowDefinition>
+            <RowDefinition Height="120"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="60 "></RowDefinition>
+            <RowDefinition Height="120"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="200"></ColumnDefinition>
+
+        </Grid.ColumnDefinitions>
+
+        <Button x:Name="connect_btn" Grid.Column="0" Grid.RowSpan="4" HorizontalContentAlignment="Center" Margin="2,10" Click="Connect_btn_Click" Background="LightGray">
+            <TextBlock  TextAlignment="Center" FontSize="18" FontWeight="Bold" Width="10" TextWrapping="Wrap">Connect</TextBlock>
+        </Button>
+
+        <RadioButton x:Name="user_input_radiobtn" Content="User input" Grid.Column="1" Margin="10,10,10,10" FontSize="20" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" IsEnabled="True" Checked="User_input_radiobtn_checked"/>
+        <Button x:Name="output_btn" IsEnabled="False" Content="Output" FontSize="20" FontWeight="Medium" Margin="24,10,24,10" Height="40" Width="152" Grid.Column="3" Click="Output_btn_Click"/>
+
+        <GroupBox x:Name="actual_values" IsEnabled="False" Grid.Column="1" Grid.RowSpan="2" Header="Actual values" Grid.Row="1" Margin="1, 0" Padding="10, 0" FontSize="16" FontWeight="Medium" HorizontalAlignment="Center" BorderBrush="Black">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18">Voltage:</TextBlock>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Grid.Row="1">Current:</TextBlock>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Grid.Row="2">Power:</TextBlock>
+                <Label x:Name="actual_voltage" Height="35" Width="110" Margin="10, 0, -4, 0" HorizontalAlignment="Left" FontSize="18" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">11,36</Label>
+                <Label x:Name="actual_current" Height="35" Width="110" Margin="10, 0, -4, 0" HorizontalAlignment="Left" FontSize="18" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="1"/>
+                <Label x:Name="actual_power" Height="35" Width="110" Margin="10, 0, -4, 0" HorizontalAlignment="Left" FontSize="18" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="2"/>
+
+            </Grid>
+        </GroupBox>
+
+        <GroupBox x:Name="set_values" IsEnabled="False" Grid.Column="2" Grid.RowSpan="2" Header="Set values" Margin="1, 0" Padding="10, 0" FontSize="16" FontWeight="Medium"  HorizontalAlignment="Center" BorderBrush="Black">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18">Voltage:</TextBlock>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Grid.Row="1">Current:</TextBlock>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Grid.Row="2">Slew rate:</TextBlock> <!-- V/s -->
+                <TextBox x:Name="set_voltage" Height="25" Width="110" Margin="10, 0, -4, 0" HorizontalAlignment="Left" FontSize="18" Grid.Column="1" TextAlignment="Right"/>
+                <TextBox x:Name="set_current" Height="25" Width="110" Margin="10, 0, -4, 0" HorizontalAlignment="Left" FontSize="18" Grid.Column="1" Grid.Row="1" TextAlignment="Right"/>
+                <TextBox x:Name="set_slew"    Height="25" Width="110" Margin="10, 0, -4, 0" HorizontalAlignment="Left" FontSize="18" Grid.Column="1" Grid.Row="2" TextAlignment="Right"/> 
+
+            </Grid>
+        </GroupBox>
+
+        <GroupBox x:Name="protections" IsEnabled="False" Grid.Column="3" Header="Protections" Grid.Row="1" Height="Auto" Width="150" FontSize="16" FontWeight="Medium" HorizontalAlignment="Center" BorderBrush="Black">
+            <StackPanel>
+                <RadioButton x:Name="protection_off" Checked="Protection_check" Content="off" VerticalAlignment="Top" VerticalContentAlignment="Center" Height="30" Width="50" IsChecked="False"/>
+                <RadioButton x:Name="protection_OCP" Checked="Protection_check" Content="OCP" VerticalAlignment="Center" VerticalContentAlignment="Center" Height="30" Width="50" IsChecked="False"/>
+                <RadioButton x:Name="protection_OVP" Checked="Protection_check" Content="OVP" VerticalAlignment="Bottom" VerticalContentAlignment="Center" Height="30" Width="50" IsChecked="False"/>
+            </StackPanel>
+        </GroupBox>
+
+        <Button x:Name="set_values_btn" IsEnabled="False" Content="Set values" FontSize="13" FontWeight="Medium" Height="20" Width="152" Grid.Row="2" Grid.Column="2" Click="Set_values_btn_Click"/>
+        <Button x:Name="abort_script_btn" IsEnabled="False" Content="Abort script" FontSize="13" FontWeight="Medium" Height="20" Width="152" Grid.Row="2" Grid.Column="3" Click="Abort_script_btn_Click"/>
+
+        <RadioButton x:Name="script_input_radiobtn" Content="Script input" Grid.Row="3" Grid.Column="1" Margin="10,10,10,10" FontSize="20" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" Checked="Script_input_radiobtn_checked" IsEnabled="False"/>
+        <!--
+        <TextBox Grid.Row="3" Grid.Column="2" Height="25" Width="Auto" Margin="10, 0"/>
+        <Button x:Name="start_script" Content="Start script" FontSize="20" FontWeight="Medium" Margin="24,10,24,10" Grid.Row="3" Grid.Column="3" Background="AliceBlue"/>
+        -->
+
+        <GroupBox x:Name="script" IsEnabled="False" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" BorderBrush="White" BorderThickness="0">
+            <Grid Margin="0 0 -6 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <TextBox x:Name="script_path" Height="25" Width="Auto" Margin="8 0 12 0" FontSize="18" FontWeight="Medium" TextAlignment="Right"/>
+                <Button x:Name="start_script_btn" Content="Start script" FontSize="20" FontWeight="Medium" Height="40" Width="152" Grid.Column="1" Click="Start_script_btn_Click"/>
+            </Grid>
+        </GroupBox>
+
+        <!--
+        <StackPanel Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2">
+            <TextBox Height="25" Width="Auto" Margin="10, 0"/>
+            <Button x:Name="start_script" Content="Start script" FontSize="20" FontWeight="Medium" Margin="24,10,24,10" Background="AliceBlue"/>
+        </StackPanel>
+        -->
+
+        <GroupBox Grid.Row="4" Grid.ColumnSpan="4" Margin="0, 10" Header="System logging" FontSize="16" FontWeight="Medium" BorderBrush="Black">
+            <Label x:Name="sys_log" Content="" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center" Height="50" Width="700" HorizontalContentAlignment="Center"/>
+        </GroupBox>
+
+    </Grid>
+</Window>
