@@ -63,19 +63,19 @@ namespace projekt_WPF
 					connect_btn.Background = new SolidColorBrush(Colors.Green);
 					user_input_radiobtn.IsEnabled = true;
 					script_input_radiobtn.IsEnabled = true;
-					sys_log.Content = "Connected";
+					sys_log.Text = "Connected";
 					actual_values_timer.Start();
 				}
 				else
                 {
                     connect_btn.Background = new SolidColorBrush(Colors.Red);
-                    sys_log.Content = "Disconnected";
+                    sys_log.Text = "Disconnected";
                     actual_values_timer.Stop();
                 }
             }
             catch (Exception ex)
             {
-                sys_log.Content = ex.Message.ToString();
+                sys_log.Text = ex.Message.ToString();
             }
         }
 
@@ -134,11 +134,11 @@ namespace projekt_WPF
                 {
                     output_btn.Background = new SolidColorBrush(Colors.LightGray);
                 }
-                sys_log.Content = "Output: " + flag_output;
+                sys_log.Text = "Output: " + flag_output;
             }
             catch (Exception ex)
             {
-                sys_log.Content = ex.Message.ToString();
+                sys_log.Text = ex.Message.ToString();
 			}
         }
 
@@ -150,22 +150,22 @@ namespace projekt_WPF
                 if ((bool)protection_off.IsChecked)
                 {
                         zdroj.OverLimProt = Zdroj.OverLimitProtection.Disabled;
-                        sys_log.Content = "Protection: Disabled";
+                        sys_log.Text = "Protection: Disabled";
             }
                 else if ((bool)protection_OVP.IsChecked)
                 {
                     zdroj.OverLimProt = Zdroj.OverLimitProtection.OVP;
-                    sys_log.Content = "Protection: OVP";
+                    sys_log.Text = "Protection: OVP";
                 }
                 else
                 {
                     zdroj.OverLimProt = Zdroj.OverLimitProtection.OCP;
-                    sys_log.Content = "Protection: OCP";                
+                    sys_log.Text = "Protection: OCP";                
                 }
             }
             catch (Exception ex)
             {
-                sys_log.Content = ex.Message.ToString();
+                sys_log.Text = ex.Message.ToString();
 			}  
         }
 
@@ -217,7 +217,7 @@ namespace projekt_WPF
             catch (Exception ex)
             {
                 actual_values_timer.Stop();
-                sys_log.Content = ex.Message.ToString();
+                sys_log.Text = ex.Message.ToString();
 			}
 
             if (ZdrojSkript.ScriptRunning)
@@ -246,7 +246,7 @@ namespace projekt_WPF
                 }
                 else
                 {
-                    sys_log.Content = "Incorrect voltage limit value";
+                    sys_log.Text = "Incorrect voltage limit value";
                     return;
                 }
 
@@ -260,7 +260,7 @@ namespace projekt_WPF
 				}
 				else
 				{
-					sys_log.Content = "Incorrect current limit value";
+					sys_log.Text = "Incorrect current limit value";
 					return;
 				}
 
@@ -275,16 +275,16 @@ namespace projekt_WPF
 				}
 				else
 				{
-					sys_log.Content = "Incorrect voltage slew value";
+					sys_log.Text = "Incorrect voltage slew value";
 					return;
 				}
 
-				sys_log.Content = "Set values: V = " + VoltageLimit + "; I = " + CurrentLimit + "; Slew rate = " + VoltSlew;
+				sys_log.Text = "Set values: V = " + VoltageLimit + "; I = " + CurrentLimit + "; Slew rate = " + VoltSlew;
 
             }
             catch (Exception ex)
             {
-                sys_log.Content = ex.Message.ToString();
+                sys_log.Text = ex.Message.ToString();
 			}
         }
 
@@ -317,7 +317,7 @@ namespace projekt_WPF
                     ZdrojSkript.Init(script_path.Text);
                     ZdrojSkript.Start(zdroj);
                     scriptStartTime = DateTime.Now;
-					sys_log.Content = "Script started. Total commands to be executed: " +
+					sys_log.Text = "Script started. Total commands to be executed: " +
                         ZdrojSkript.TotalScriptCommands + ". Total time: " +
                         string.Format("{0:f2}", ZdrojSkript.TotalTime/60) +
                         " minutes.";
@@ -326,12 +326,12 @@ namespace projekt_WPF
                 }
                 else
                 {
-                    sys_log.Content = "Script file does not exist. Check file path.";
+                    sys_log.Text = "Script file does not exist. Check file path.";
                 }
             }
             catch (Exception ex)
             {
-                sys_log.Content = ex.Message.ToString();
+                sys_log.Text = ex.Message.ToString();
 			}
 
         }
@@ -341,13 +341,13 @@ namespace projekt_WPF
             try
             {
                 ZdrojSkript.Abort();
-                sys_log.Content = "Script is aborted";
+                sys_log.Text = "Script is aborted";
                 script_progress_bar.Value = 0;
 				script_progress_bar_lbl.Content = "Status: script stopped";
 			}
             catch (Exception ex)
             {
-                sys_log.Content = ex.Message.ToString();
+                sys_log.Text = ex.Message.ToString();
 			}
         }
     }
